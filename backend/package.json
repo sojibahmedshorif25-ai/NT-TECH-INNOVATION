@@ -1,0 +1,27 @@
+{
+  "name": "smarthire-backend",
+  "version": "1.0.0",
+  "description": "Express.js REST API Server with MongoDB Atlas & Gemini 3.8 Flash AI",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js",
+    "test": "vitest run",
+    "seed": "node scripts/seed.cjs"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.9.5",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9",
+    "vitest": "^2.1.8"
+  }
+}

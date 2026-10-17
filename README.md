@@ -1,15 +1,16 @@
 # SmartHire AI — Intelligent Recruitment & Pipeline Platform
 
 [![Tests](https://img.shields.io/badge/Vitest-11%20Passed-success.svg)](https://github.com/sojibahmedshorif25-ai/NT-TECH-INNOVATION)
-[![Framework](https://img.shields.io/badge/Next.js-16%20Turbopack-blue.svg)](https://nextjs.org)
+[![Frontend](https://img.shields.io/badge/Frontend-Next.js%2016%20Turbopack-blue.svg)](https://nextjs.org)
+[![Backend](https://img.shields.io/badge/Backend-Express.js%20REST%20API-lightgrey.svg)](https://expressjs.com)
 [![Database](https://img.shields.io/badge/MongoDB-Atlas%20Live-green.svg)](https://mongodb.com)
 [![AI Engine](https://img.shields.io/badge/Google%20Gemini-3.8%20Flash-orange.svg)](https://aistudio.google.com)
-[![TypeScript](https://img.shields.io/badge/TypeScript-Strict-blue.svg)](https://www.typescriptlang.org)
+[![Architecture](https://img.shields.io/badge/Architecture-Separated%20Frontend%20%26%20Backend-purple.svg)](https://github.com/sojibahmedshorif25-ai/NT-TECH-INNOVATION)
 
 > **Full Stack Developer Practical Assessment Submission**  
 > **Candidate:** Sojib Ahmed  
 > **Repository:** [https://github.com/sojibahmedshorif25-ai/NT-TECH-INNOVATION](https://github.com/sojibahmedshorif25-ai/NT-TECH-INNOVATION)  
-> **Submission Deadline:** 17 October 2026 / 19 October 2026  
+> **Architecture Pattern:** Decoupled Modular Monorepo (`frontend/` + `backend/`)
 
 ---
 
@@ -24,53 +25,91 @@ Modern technical recruiting suffers from **manual resume screening fatigue**, in
 2. **Recruiter Intelligence**: Hiring managers manage applicants across an interactive Kanban board governed by a strict multi-stage state machine (`APPLIED` → `UNDER_REVIEW` → `AI_SCREENED` → `SHORTLISTED` → `INTERVIEW_SCHEDULED` → `OFFERED` / `REJECTED`).
 3. **AI Resume Screening**: Powered by **Google Gemini 3.8 Flash**, extracting deep semantic skills, identifying gaps, and calculating composite fit ratings in real time.
 4. **Hiring Analytics**: Live visibility into candidate conversion rates, average time-in-stage, compensation expectations vs allocated budgets, and qualification distribution.
+5. **Decoupled Architecture**: Strictly organized into independent `frontend/` (Next.js 16 + React 19) and `backend/` (Express.js + MongoDB Atlas) services for maximum modularity and scalability.
 
 ---
 
-## 2. System Architecture
+## 2. System Architecture & Folder Separation
+
+```
+NT-TECH-INNOVATION/
+├── frontend/                      # Client-Side Application (Next.js 16, Port 3000)
+│   ├── src/
+│   │   ├── app/                   # App Router Pages & Styles
+│   │   │   ├── page.tsx           # Job Search & Filtering Homepage
+│   │   │   ├── jobs/[id]/page.tsx # Detailed Job Description & Direct Application
+│   │   │   ├── pipeline/page.tsx  # 7-Stage Recruiter Kanban Board
+│   │   │   ├── my-applications/   # Candidate Application Tracker
+│   │   │   ├── analytics/page.tsx # Recruitment KPI Dashboard
+│   │   │   ├── docs/page.tsx      # System Architecture & API Documentation
+│   │   │   ├── login/page.tsx     # OAuth & Credentials Login
+│   │   │   ├── register/page.tsx  # Account Registration
+│   │   │   └── globals.css        # Glassmorphic Design System
+│   │   ├── components/            # Reusable UI (Navbar, JobCard, AIMatchModal, etc.)
+│   │   ├── context/               # AuthContext & ToastContext
+│   │   └── lib/                   # Client-side State Machine & Types
+│   ├── next.config.ts             # Proxy Rewrites: /api/* -> http://localhost:5000/api/*
+│   └── package.json
+│
+├── backend/                       # Server-Side Application (Express.js, Port 5000)
+│   ├── src/
+│   │   ├── server.js              # Express entry point (CORS, Cookie Parser, Routes)
+│   │   ├── models/                # Mongoose Schemas (User, Job, Application)
+│   │   ├── routes/                # Express Routers (auth, jobs, applications, pipeline, ai, analytics)
+│   │   ├── controllers/           # Modular route controllers & business logic
+│   │   ├── middlewares/           # JWT Authentication & RBAC protection
+│   │   ├── lib/                   # db.js, gemini.js, pipeline.js, validations.js, auth.js
+│   │   └── __tests__/             # Automated Vitest unit test suite (11/11 tests passing)
+│   ├── scripts/                   # Database seeder (seed.cjs)
+│   └── package.json
+│
+├── package.json                   # Root orchestrator (concurrent dev runners)
+├── README.md                      # Complete system documentation
+└── VIVA_AND_LIVE_CODING_GUIDE.md  # Interview preparation & live-coding defense guide
+```
 
 ```mermaid
 graph TD
-    Client[React 19 / Next.js Client Components]
+    User([User Browser])
     
-    subgraph Frontend Layer
-        Home[Explore Jobs / Filters]
-        Kanban[Recruiter Pipeline Board]
-        CandidatePortal[My Applications Tracker]
-        AnalyticsDashboard[Recruitment KPI Funnel]
+    subgraph Frontend [Frontend - Port 3000]
+        NextApp[Next.js 16 App Router]
+        KanbanUI[Recruiter Kanban Board]
+        CandidateUI[Candidate Portal]
+        AnalyticsUI[KPI Funnel Dashboard]
     end
 
-    subgraph Backend APIs Next.js Route Handlers
-        AuthAPI["/api/auth (Login, Register, Session)"]
-        JobsAPI["/api/jobs (CRUD & Filtering)"]
-        AppAPI["/api/applications (Submit & Track)"]
-        PipelineAPI["/api/pipeline (State Machine Transitions)"]
-        AiAPI["/api/ai/evaluate (Gemini 3.8 Flash Engine)"]
-        AnalyticsAPI["/api/analytics (KPI Calculations)"]
+    subgraph Backend [Backend - Port 5000]
+        ExpressServer[Express.js Server]
+        AuthRoute["/api/auth (JWT & Google OAuth)"]
+        JobsRoute["/api/jobs (CRUD & Filters)"]
+        AppRoute["/api/applications (Screening)"]
+        PipelineRoute["/api/pipeline (State Machine)"]
+        AiRoute["/api/ai/evaluate (Gemini Engine)"]
+        AnalyticsRoute["/api/analytics (KPI Math)"]
+        
+        StateMachine[Pipeline State Machine Engine]
+        ZodValidator[Zod Schema Validation]
     end
 
-    subgraph Business Logic & Security
-        StateMachine[Pipeline State Machine Validator]
-        ScoringAlgo[Composite Fit Index Calculator]
-        ZodValidator[Zod Input Validation Schemas]
-        JWTAuth[Bcrypt Hash & JWT RBAC]
-    end
-
-    subgraph Persistence & External Services
+    subgraph Persistence [Cloud & External Services]
         MongoAtlas[(MongoDB Atlas Database)]
-        GeminiService[Google Gemini 3.8 Flash API]
+        GeminiAPI[Google Gemini 3.8 Flash API]
+        GoogleOAuth[Google OAuth 2.0 Identity]
     end
 
-    Client --> FrontendLayer
-    FrontendLayer --> BackendAPIs
-    BackendAPIs --> BusinessLogic
-    BackendAPIs --> MongoAtlas
-    AiAPI --> GeminiService
+    User --> NextApp
+    NextApp --> ExpressServer
+    ExpressServer --> StateMachine
+    ExpressServer --> ZodValidator
+    ExpressServer --> MongoAtlas
+    ExpressServer --> GeminiAPI
+    ExpressServer --> GoogleOAuth
 ```
 
 ---
 
-## 3. Core Implementation Details
+## 3. Core Implementation Details (100 Marks Rubric)
 
 ### A. Frontend & User Experience (15 Marks)
 * **Design System**: Hand-crafted modern dark-mode aesthetic with custom CSS variables, glassmorphic card containers (`backdrop-filter: blur(16px)`), and curated gradient accents (`#6366f1` to `#a855f7`).
@@ -80,13 +119,14 @@ graph TD
 * **1-Click Reviewer Switcher**: Navbar presets allowing instant zero-click toggling between **Recruiter (Sarah Jenkins)** and **Candidate (Alex Rivera)** personas.
 
 ### B. Backend APIs & CRUD (20 Marks)
-* Fully modular RESTful Next.js Route Handlers:
-  * `POST /api/auth/register` — Validates input, hashes password, creates user profile, returns JWT.
+* Standalone Express.js REST API on port 5000:
+  * `POST /api/auth/register` — Validates input via Zod, hashes password with Bcrypt, returns JWT.
   * `POST /api/auth/login` — Authenticates credentials, sets secure HTTP-only session cookie.
   * `GET /api/auth/me` & `DELETE /api/auth/me` — Session check and logout.
+  * `GET /api/auth/google` & `GET /api/auth/callback/google` — Google OAuth 2.0 flow.
   * `GET /api/jobs` — Multi-facet search (title, department, skills) and filters (type, experience level).
   * `POST /api/jobs` — Protected endpoint for recruiters/admins to publish new job vacancies.
-  * `GET /api/jobs/[id]` & `PUT /api/jobs/[id]` & `DELETE /api/jobs/[id]` — Full CRUD operations.
+  * `GET /api/jobs/:id` & `PUT /api/jobs/:id` & `DELETE /api/jobs/:id` — Full CRUD operations.
   * `POST /api/applications` — Submits candidate application and automatically triggers Gemini AI evaluation.
   * `GET /api/applications` — Role-scoped (candidates see their own, recruiters see applicants for their jobs).
   * `PATCH /api/pipeline` — Updates candidate pipeline stage with state-machine validation and audit history.
@@ -96,66 +136,41 @@ graph TD
 ### C. Business Logic & Calculations (20 Marks)
 1. **Pipeline State Machine**:
    * Enforces legal hiring workflows through `canTransitionStage(from, to)`.
-   * For example, candidates cannot jump illegally from `APPLIED` straight to `OFFERED` without passing through screening and interview stages.
+   * Candidates cannot jump illegally (e.g., `APPLIED` straight to `OFFERED` without passing through screening and interview stages).
    * Maintains an audit trail (`stageHistory`) logging timestamps, recruiter ID, and transition notes.
-2. **Candidate Composite Fit Index Algorithm**:
-   ```ts
-   // Weighted algorithmic score:
-   compositeScore = (AI_Score * 0.60) + (Experience_Fit * 0.25) + (Budget_Alignment * 0.15)
-   ```
-   * Accounts for seniority gaps and penalizes salary requests exceeding the allocated budget band.
-3. **Pipeline Analytics Engine**:
-   * Aggregates inbound applicants, computes interview conversion percentage (`(Interviewed / Total) * 100`), offer conversion rate, and average compensation variance.
+2. **Candidate Composite Fit Index**:
+   * Algorithmic multi-factor candidate scoring:
+     $$\text{Composite Fit} = (\text{AI Score} \times 0.60) + (\text{Experience Match} \times 0.25) + (\text{Budget Fit} \times 0.15)$$
+   * Categorizes candidates into actionable tiers: `Top Tier` ($\ge 85$), `Strong Match` ($\ge 70$), `Potential Fit` ($\ge 50$), and `High Risk` ($< 50$).
 
-### D. Database & Data Handling (15 Marks)
-* **Live Persistence**: Connected directly to cloud **MongoDB Atlas** cluster (`cluster0.bmhttkc.mongodb.net`).
-* **Entity Relationships**:
-  * `User` (1) $\leftrightarrow$ (N) `Job` (Recruiter ownership)
-  * `Job` (1) $\leftrightarrow$ (N) `Application`
-  * `User` (1) $\leftrightarrow$ (N) `Application` (Candidate applications)
-  * `Application` (1) $\leftrightarrow$ (1) `AIMatchReport` (Embedded AI semantic breakdown)
-  * `Application` (1) $\leftrightarrow$ (N) `StageHistory` (Audit trail log)
-* **Resilience**: Integrated automatic SRV DNS failover (`8.8.8.8`, `1.1.1.1`) ensuring high availability across corporate networks and Windows resolvers.
+### D. AI & Machine Learning Integration (15 Marks)
+* **Model**: Google Gemini 3.8 Flash (`models/gemini-3.8-flash`).
+* **Semantic Analysis**: Analyzes resume content against job title, seniority, and required technical competencies.
+* **Structured Output**: Strictly parsed JSON returning:
+  * `score` (0-100 numerical fit score)
+  * `matchedSkills` (verified competencies)
+  * `missingSkills` (skill gaps)
+  * `summary` (concise recruiter assessment)
+  * `interviewQuestions` (3-5 targeted technical questions)
+* **Resilient Heuristic Fallback**: An internal NLP engine provides graceful degradation if external AI quotas or offline states occur.
 
-### E. Security, Authentication & Validation (10 Marks)
-* **Authentication**: Salted password hashing with `bcryptjs` (cost factor 10) and signed JWT tokens with 7-day expiration.
-* **Role-Based Access Control (RBAC)**: Strict permission boundaries separating `CANDIDATE` and `RECRUITER` privileges.
-* **Input Validation**: Robust **Zod schemas** (`RegisterSchema`, `LoginSchema`, `CreateJobSchema`, `ApplyJobSchema`, `UpdatePipelineSchema`) rejecting invalid emails, short passwords, negative salaries, or missing fields before reaching the database.
+### E. Authentication, Security & Data Persistence (10 Marks)
+* **Authentication**: Password hashing with Bcrypt + stateless JWT signed sessions in HTTP-only cookies.
+* **Google OAuth 2.0**: Native authorization code flow.
+* **Role-Based Access Control (RBAC)**: Clear role boundaries: `CANDIDATE`, `RECRUITER`, and `ADMIN`.
+* **Database & Integrity**: MongoDB Atlas multi-shard replicaSet with compound unique index `{ jobId: 1, candidateId: 1 }` preventing duplicate applications.
 
 ---
 
-## 4. AI / ML Feature Details (10 Marks)
+## 4. Automated Testing & Code Quality (10 Marks)
 
-* **Model Used**: **Google Gemini 3.8 Flash** (`models/gemini-3.8-flash`) via Google AI Studio API.
-* **Resilient Architecture**: Includes an intelligent natural language keyword and skill coverage heuristic fallback engine if external internet/rate-limits occur, ensuring 100% platform uptime during live reviews.
-
-### AI Inputs & Outputs
-| Component | Details |
-| :--- | :--- |
-| **Inputs** | Target Job Title, Department, Job Description, Required Skills array, Candidate Name, Years of Experience, Raw Resume Text. |
-| **Outputs** | Fit Score (0–100%), Executive Evaluation Summary, Matched Skills array, Missing Skills / Skill Gaps array, 3 Key Strengths, Growth / Interview Probe Areas, Recommendation Category (`HIGHLY_RECOMMENDED`, `POTENTIAL_FIT`, `NEEDS_UPSKILLING`, `NOT_A_FIT`). |
-
-### Limitations
-1. **Resume Token Window**: Resumes are truncated to 4,000 characters to optimize token latency.
-2. **Contextual Inferences**: Candidates using non-standard naming for skills (e.g. "ECMAScript" vs "JavaScript") require semantic interpretation.
-3. **Prompt Drift & Hallucination Defense**: Constrained to strict JSON response mode with deterministic sampling temperature (`0.2`).
-
-### Evaluation of AI Usefulness
-* **Screening Efficiency**: Reduces initial resume triage time from ~10 minutes per applicant to under 2 seconds.
-* **Objective Skill Matching**: Eliminates subjective bias by verifying proven technologies against job requirements.
-* **Actionable Interview Guidance**: Equips hiring managers with automated interview probing questions focused on candidate skill gaps.
-
----
-
-## 5. Automated Testing & Code Quality (10 Marks)
-
-The repository includes a comprehensive unit testing suite using **Vitest** verifying critical business logic and security schemas.
+The backend includes a comprehensive unit testing suite using **Vitest** verifying critical business logic and security schemas:
 
 ```bash
 npm test
 ```
 
-### Test Suite Coverage:
+### Test Suite Coverage (11/11 Passing):
 * `canTransitionStage`: Validates legal forward transitions (`APPLIED` $\rightarrow$ `UNDER_REVIEW`, `SHORTLISTED` $\rightarrow$ `INTERVIEW_SCHEDULED`, etc.).
 * `canTransitionStage`: Verifies illegal stage skips (e.g. `APPLIED` directly to `OFFERED` is strictly rejected).
 * `canTransitionStage`: Rejection audit and reconsideration workflows.
@@ -169,14 +184,14 @@ npm test
 
 ---
 
-## 6. Setup & Local Execution Guide
+## 5. Quick Start & Execution Guide
 
 ### Prerequisites
 * **Node.js**: v20+ or v24+
 * **npm**: v10+ or v11+
 * **Git**
 
-### Installation
+### Installation & Running
 
 1. **Clone the repository:**
    ```bash
@@ -184,47 +199,43 @@ npm test
    cd NT-TECH-INNOVATION
    ```
 
-2. **Install dependencies:**
+2. **Install all dependencies:**
    ```bash
-   npm install
+   npm run install:all
    ```
 
 3. **Configure Environment Variables:**
-   Create a `.env` file in the root directory (refer to `.env.example`):
+   Create `.env` in `backend/`:
    ```env
-   # MongoDB Atlas Connection URI
+   PORT=5000
    MONGODB_URI=mongodb+srv://sojibahmedshorif25_db_user:sFNxVUNWptvibS1e@cluster0.bmhttkc.mongodb.net/smarthire?retryWrites=true&w=majority
-
-   # JWT Secret Key
    JWT_SECRET=smarthire_super_secret_jwt_key_2026_secure
-
-   # Google Gemini API Key
    GEMINI_API_KEY=your_gemini_api_key_here
-
-   # Next.js App URL
-   NEXT_PUBLIC_APP_URL=http://localhost:3000
+   GOOGLE_CLIENT_ID=53349518913-km2kfqhv467aq1d2o62l7hj8g3okcvvt.apps.googleusercontent.com
+   GOOGLE_CLIENT_SECRET=your_google_client_secret
+   CLIENT_URL=http://localhost:3000
    ```
 
-4. **Seed Demo Data:**
-   Populates MongoDB Atlas with demo accounts, job postings, and evaluated candidates:
+4. **Seed Database:**
    ```bash
    npm run seed
    ```
 
-5. **Run Automated Unit Tests:**
+5. **Run Unit Tests:**
    ```bash
    npm test
    ```
 
-6. **Start Development Server:**
+6. **Start Frontend & Backend Concurrently:**
    ```bash
    npm run dev
    ```
-   Open [http://localhost:3000](http://localhost:3000) in your browser.
+   * **Frontend Application**: [http://localhost:3000](http://localhost:3000)
+   * **Backend API**: [http://localhost:5000](http://localhost:5000)
 
 ---
 
-## 7. Demo Credentials for Reviewers
+## 6. Demo Credentials for Reviewers
 
 | Role | Email | Password | Pre-seeded Features |
 | :--- | :--- | :--- | :--- |
@@ -235,25 +246,7 @@ npm test
 
 ---
 
-## 8. Live Demonstration & Technical Review Guide (Viva Prep)
-
-### Expected Interview Questions & Ready Answers:
-
-**Q1: How does your application ensure database data integrity and handle relationships?**
-> *"We use Mongoose with MongoDB Atlas. Our schema establishes clear 1:N relationships between Users and Jobs, and Jobs and Applications. We enforce a unique compound index on `{ jobId: 1, candidateId: 1 }` in the Application collection, which mathematically prevents duplicate applications by the same candidate for the same job."*
-
-**Q2: Explain your business logic state machine.**
-> *"Recruitment pipelines require strict operational discipline. In `src/lib/pipeline.ts`, we implemented a state machine mapping valid transitions. A candidate cannot jump straight from `APPLIED` to `OFFERED`. Every stage transition is validated on the backend API before database persistence and appends an immutable entry to `stageHistory` recording the timestamp, acting recruiter, and note."*
-
-**Q3: How does your AI evaluation work and how do you handle hallucinations or downtime?**
-> *"We prompt Google Gemini 3.8 Flash using a low temperature (`0.2`) and strict JSON response mode (`responseMimeType: 'application/json'`). If the external network fails or rate limits are reached, the service gracefully switches to our internal heuristic NLP engine, which performs skill dictionary matching and experience scoring so the application never breaks."*
-
-**Q4: How do you handle live code modifications or adding a new feature?**
-> *"The project is built with clean separation of concerns: models are in `src/models/`, core algorithms in `src/lib/`, API routes in `src/app/api/`, and reusable UI components in `src/components/`. Adding a new field (e.g. applicant LinkedIn URL or a new pipeline stage) takes less than 2 minutes by updating the Zod schema, Mongoose model, and UI component."*
-
----
-
-## 9. Author
+## 7. Author
 * **Developer:** Sojib Ahmed  
 * **Assessment:** NT Tech Innovation Full Stack Developer Practical Assessment  
-* **Date:** October 2026
+* **Submission Date:** October 2026
