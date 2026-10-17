@@ -55,6 +55,7 @@ export default function Navbar() {
           { label: 'Analytics', href: '/analytics', icon: BarChart3 },
         ]
       : []),
+    { label: 'System Docs', href: '/docs', icon: Layers },
   ];
 
   return (

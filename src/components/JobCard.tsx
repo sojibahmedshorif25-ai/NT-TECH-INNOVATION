@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { MapPin, DollarSign, Clock, Sparkles, Send, CheckCircle2 } from 'lucide-react';
 
 interface JobCardProps {
@@ -25,7 +26,9 @@ export default function JobCard({ job, onApply, hasApplied }: JobCardProps) {
 
       {/* Title & Department */}
       <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#fff', marginBottom: '4px' }}>
-        {job.title}
+        <Link href={`/jobs/${job._id}`} style={{ color: 'inherit', textDecoration: 'none' }}>
+          {job.title}
+        </Link>
       </h3>
       <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '0.75rem' }}>
         {job.department}

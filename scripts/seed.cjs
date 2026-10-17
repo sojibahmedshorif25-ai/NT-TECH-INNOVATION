@@ -11,7 +11,7 @@ try {
 
 const MONGODB_URI =
   process.env.MONGODB_URI ||
-  'mongodb+srv://sojibahmedshorif25_db_user:sFNxVUNWptvibS1e@cluster0.bmhttkc.mongodb.net/smarthire?retryWrites=true&w=majority';
+  'mongodb://sojibahmedshorif25_db_user:sFNxVUNWptvibS1e@ac-1ykvasf-shard-00-00.bmhttkc.mongodb.net:27017,ac-1ykvasf-shard-00-01.bmhttkc.mongodb.net:27017,ac-1ykvasf-shard-00-02.bmhttkc.mongodb.net:27017/smarthire?ssl=true&replicaSet=atlas-5x7rb5-shard-0&authSource=admin&retryWrites=true&w=majority';
 
 // Minimal schema definitions for seeding
 const UserSchema = new mongoose.Schema(
